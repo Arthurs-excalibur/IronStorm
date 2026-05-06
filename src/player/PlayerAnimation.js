@@ -78,4 +78,13 @@ export class PlayerAnimation {
   has(name) {
     return this.actions.has(name.toLowerCase());
   }
+
+  getCurrentActionDuration() {
+    return this.currentAction?.getClip().duration ?? 0;
+  }
+
+  getNormalizedTime() {
+    if (!this.currentAction) return 0;
+    return this.currentAction.time / this.currentAction.getClip().duration;
+  }
 }

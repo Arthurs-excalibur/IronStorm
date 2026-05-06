@@ -6,9 +6,13 @@ export class Input {
     this.keys = new Map();
     this.pointerNdc = new THREE.Vector2();
     this.primaryAttackQueued = false;
+    this.dashQueued = false;
 
     window.addEventListener('keydown', (event) => {
       this.keys.set(event.code, true);
+      if (event.code === 'Space' || event.code === 'ShiftLeft') {
+        this.dashQueued = true;
+      }
     });
 
     window.addEventListener('keyup', (event) => {
@@ -17,6 +21,7 @@ export class Input {
 
     window.addEventListener('blur', () => {
       this.keys.clear();
+      this.dashQueued = false;
     });
 
     window.addEventListener('pointermove', (event) => {
@@ -30,6 +35,12 @@ export class Input {
         this.primaryAttackQueued = true;
       }
     });
+  }
+
+  consumeDash() {
+    const shouldDash = this.dashQueued;
+    this.dashQueued = false;
+    return shouldDash;
   }
 
   getMovementVector() {

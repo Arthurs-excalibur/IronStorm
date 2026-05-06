@@ -1,4 +1,5 @@
 export const FOREST_PROP_LAYOUT = [
+  // Big Trees (Outer Ring)
   {
     modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Tree_2_A_Color1.gltf',
     position: [-11, 0, -9],
@@ -24,6 +25,20 @@ export const FOREST_PROP_LAYOUT = [
     scale: 2.9,
   },
   {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Tree_2_C_Color1.gltf',
+    position: [0, 0, -15],
+    rotationY: 0,
+    scale: 3.2,
+  },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Tree_4_C_Color1.gltf',
+    position: [15, 0, 0],
+    rotationY: 2.1,
+    scale: 3.1,
+  },
+
+  // Rocks
+  {
     modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Rock_3_H_Color1.gltf',
     position: [-6.5, 0, 9.5],
     rotationY: -0.8,
@@ -35,6 +50,14 @@ export const FOREST_PROP_LAYOUT = [
     rotationY: 0.35,
     scale: 1.7,
   },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Rock_2_E_Color1.gltf',
+    position: [-10, 0, 0],
+    rotationY: 1.5,
+    scale: 2.2,
+  },
+
+  // Bushes & Undergrowth
   {
     modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Bush_2_D_Color1.gltf',
     position: [-4.2, 0, -8.3],
@@ -48,6 +71,20 @@ export const FOREST_PROP_LAYOUT = [
     scale: 1.5,
   },
   {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Bush_2_E_Color1.gltf',
+    position: [9, 0, 4],
+    rotationY: 2.2,
+    scale: 1.8,
+  },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Bush_1_G_Color1.gltf',
+    position: [-8, 0, 5],
+    rotationY: -1.1,
+    scale: 1.7,
+  },
+
+  // Grass Patches
+  {
     modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Grass_2_B_Singlesided_Color1.gltf',
     position: [-2.3, 0, 5.8],
     rotationY: 0.8,
@@ -58,5 +95,23 @@ export const FOREST_PROP_LAYOUT = [
     position: [3.6, 0, 4.6],
     rotationY: -0.2,
     scale: 1.8,
+  },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Grass_2_A_Singlesided_Color1.gltf',
+    position: [0, 0, -6],
+    rotationY: 1.2,
+    scale: 2.0,
+  },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Grass_1_B_Singlesided_Color1.gltf',
+    position: [-5, 0, -3],
+    rotationY: -0.5,
+    scale: 1.5,
+  },
+  {
+    modelUrl: '/map/KayKit_Forest_Nature_Pack_1.0_FREE/Assets/gltf/Grass_2_C_Singlesided_Color1.gltf',
+    position: [6, 0, -2],
+    rotationY: 0.4,
+    scale: 1.9,
   },
 ];

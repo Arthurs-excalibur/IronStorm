@@ -1,129 +1,60 @@
+/**
+ * Catalog of characters available in the game.
+ * Each character references a weapon from the weaponCatalog and can provide optional overrides.
+ */
+
 export const CHARACTER_OPTIONS = [
   {
     id: 'barbarian',
     label: 'Barbarian',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Barbarian.glb',
-    attack: {
-      type: 'melee',
-      damage: 22,
-      cooldown: 0.45,
-      range: 2.3,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/axe_1handed.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.2,
-      gripAnchor: [0.85, 0.08, 0.5],
-      holdOffset: [0, 0.02, 0],
-      tipPosition: [0.95, 0, 0],
+    weaponId: 'axe_1handed',
+    weaponOverrides: {
+      alignment: {
+        gripScale: 1.3, // Barbarian holds it slightly larger
+      },
     },
   },
   {
     id: 'knight',
     label: 'Knight',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Knight.glb',
-    attack: {
-      type: 'melee',
-      damage: 18,
-      cooldown: 0.35,
-      range: 2.1,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/sword_1handed.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.25,
-      gripAnchor: [0.5, 0.06, 0.5],
-      holdOffset: [0, 0.02, 0],
-      tipPosition: [1.05, 0, 0],
-    },
+    weaponId: 'sword_1handed',
   },
   {
     id: 'mage',
     label: 'Mage',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Mage.glb',
-    attack: {
-      type: 'projectile',
-      damage: 16,
-      cooldown: 0.3,
-      speed: 12,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/staff.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0.08, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.2,
-      gripAnchor: [0.42, 0.18, 0.5],
-      holdOffset: [0, 0.03, 0],
-      tipPosition: [1.15, 0, 0],
+    weaponId: 'staff',
+    weaponOverrides: {
+      alignment: {
+        holdOffset: [0, 0.05, 0], // Adjusted for Mage's hand position
+      },
     },
   },
   {
     id: 'ranger',
     label: 'Ranger',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Ranger.glb',
-    attack: {
-      type: 'projectile',
-      damage: 12,
-      cooldown: 0.22,
-      speed: 15,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/bow_withString.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0.08, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.15,
-      gripAnchor: [0.58, 0.5, 0.5],
-      holdOffset: [0, 0.04, 0],
-      tipPosition: [0.85, 0.08, 0],
+    weaponId: 'bow',
+    weaponOverrides: {
+      alignment: {
+        handBoneName: 'handslot.l',
+        gripPosition: [0.1, 0, 0], // Custom grip for Ranger
+      },
     },
   },
   {
     id: 'rogue',
     label: 'Rogue',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue.glb',
-    attack: {
-      type: 'melee',
-      damage: 14,
-      cooldown: 0.24,
-      range: 1.9,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/dagger.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.25,
-      gripAnchor: [0.46, 0.08, 0.5],
-      holdOffset: [0, 0.02, 0],
-      tipPosition: [0.8, 0, 0],
-    },
+    weaponId: 'dagger',
   },
   {
     id: 'rogue-hooded',
     label: 'Rogue Hooded',
     modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Characters/gltf/Rogue_Hooded.glb',
-    attack: {
-      type: 'projectile',
-      damage: 13,
-      cooldown: 0.25,
-      speed: 14,
-    },
-    weapon: {
-      modelUrl: '/models/KayKit_Adventurers_2.0_FREE/Assets/gltf/wand.gltf',
-      handBoneName: 'handslot.r',
-      gripPosition: [0.02, 0, 0],
-      gripRotation: [0, 0, Math.PI / 2],
-      gripScale: 1.25,
-      gripAnchor: [0.5, 0.1, 0.5],
-      holdOffset: [0, 0.02, 0],
-      tipPosition: [0.75, 0, 0],
-    },
+    weaponId: 'crossbow_1handed',
   },
 ];
 

@@ -6,6 +6,7 @@ import { PlayerController } from './PlayerController.js';
 import { CHARACTER_OPTIONS, getCharacterById } from './characterCatalog.js';
 import { WeaponSystem } from '../combat/WeaponSystem.js';
 import { ANIMATION_PACK_URLS, ATTACK_ANIMATIONS_BY_CHARACTER } from './animationCatalog.js';
+import { resolveWeaponConfig } from '../combat/weaponCatalog.js';
 
 export class Player {
   constructor() {
@@ -20,6 +21,7 @@ export class Player {
     this.weaponSystem = new WeaponSystem();
     this.selectedCharacterId = CHARACTER_OPTIONS[0].id;
     this.currentAttackAnimationName = null;
+    this.activeWeaponConfig = null;
   }
 
   async load(characterId = CHARACTER_OPTIONS[0].id) {
@@ -31,14 +33,10 @@ export class Player {
     const selectedCharacter = getCharacterById(characterId);
     const gltf = await this.loadCharacterGltf(selectedCharacter);
 
-    if (this.animation?.mixer) {
-      this.animation.mixer.stopAllAction();
-    }
+    // 1. Cleanup old model
+    this.disposeCurrentCharacter();
 
-    if (this.model) {
-      this.root.remove(this.model);
-    }
-
+    // 2. Clone and setup new model
     this.model = SkeletonUtils.clone(gltf.scene);
     this.model.scale.setScalar(1.5);
     this.model.position.y = 0;
@@ -46,14 +44,50 @@ export class Player {
     this.root.add(this.model);
     this.model.updateMatrixWorld(true);
 
+    // 3. Register sockets for weapon system
+    this.weaponSystem.registerSockets(this.model);
+
+    // 4. Setup Animation
     const mixer = new THREE.AnimationMixer(this.model);
     this.animation = new PlayerAnimation(mixer, this.animationClips);
     this.controller.setAnimation(this.animation);
     this.animation.play('idle');
 
+    // 5. Setup Combat Data
     this.currentAttackAnimationName = ATTACK_ANIMATIONS_BY_CHARACTER[selectedCharacter.id] ?? null;
-    await this.weaponSystem.equipWeapon(this.model, selectedCharacter.weapon);
+    this.activeWeaponConfig = resolveWeaponConfig(
+      selectedCharacter.weaponId,
+      selectedCharacter.weaponOverrides,
+    );
+    
+    // 6. Equip weapon (now using cached sockets)
+    await this.weaponSystem.equipWeapon(this.activeWeaponConfig);
+
     this.selectedCharacterId = selectedCharacter.id;
+  }
+
+  disposeCurrentCharacter() {
+    if (this.animation?.mixer) {
+      this.animation.mixer.stopAllAction();
+    }
+
+    if (this.model) {
+      this.weaponSystem.detachWeapon();
+      this.root.remove(this.model);
+      
+      // Deep dispose to prevent memory leaks
+      this.model.traverse((node) => {
+        if (node.isMesh) {
+          node.geometry.dispose();
+          if (Array.isArray(node.material)) {
+            node.material.forEach(m => m.dispose());
+          } else {
+            node.material.dispose();
+          }
+        }
+      });
+      this.model = null;
+    }
   }
 
   async loadCharacterGltf(character) {
@@ -120,8 +154,12 @@ export class Player {
     this.weaponSystem.update(delta);
   }
 
+  setCollisionCallback(callback) {
+    this.controller.setCollisionCallback(callback);
+  }
+
   getAttackConfig() {
-    return getCharacterById(this.selectedCharacterId).attack;
+    return this.activeWeaponConfig?.attack;
   }
 
   getWeaponSystem() {

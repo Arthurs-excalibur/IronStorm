@@ -10,8 +10,10 @@ export class WeaponAnimator {
 
   setPivot(pivot) {
     this.pivot = pivot;
-    this.defaultPosition.copy(pivot.position);
-    this.defaultRotation.copy(pivot.rotation);
+    if (pivot) {
+      this.defaultPosition.copy(pivot.position);
+      this.defaultRotation.copy(pivot.rotation);
+    }
     this.activeMotion = null;
   }
 

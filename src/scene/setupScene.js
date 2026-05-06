@@ -3,8 +3,8 @@ import { createLighting } from './lighting.js';
 
 export function setupScene(container) {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#091017');
-  scene.fog = new THREE.Fog('#091017', 18, 42);
+  scene.background = new THREE.Color('#87ceeb');
+  scene.fog = new THREE.Fog('#87ceeb', 40, 90);
 
   const camera = new THREE.PerspectiveCamera(
     60,

@@ -12,6 +12,21 @@ export class PlayerController {
     this.isMoving = false;
     this.isLocked = false;
     this.targetRotation = playerRoot.rotation.y;
+    this.collisionCallback = null;
+    this.playerRadius = 0.5;
+
+    // Juice: Dash Ability
+    this.isDashing = false;
+    this.dashTime = 0;
+    this.dashDuration = 0.22;
+    this.dashSpeed = 22;
+    this.dashCooldown = 0.8;
+    this.dashCooldownRemaining = 0;
+    this.dashDirection = new THREE.Vector3();
+  }
+
+  setCollisionCallback(callback) {
+    this.collisionCallback = callback;
   }
 
   lock() {
@@ -27,6 +42,8 @@ export class PlayerController {
   }
 
   update(delta, context) {
+    this.dashCooldownRemaining = Math.max(0, this.dashCooldownRemaining - delta);
+
     if (this.isLocked) {
       this.isMoving = false;
       this.velocity.set(0, 0, 0);
@@ -36,24 +53,55 @@ export class PlayerController {
     }
 
     const movementInput = context.input.getMovementVector();
-    this.updateMovement(delta, movementInput);
+    
+    // Check for Dash
+    if (context.input.consumeDash() && this.dashCooldownRemaining <= 0 && movementInput.lengthSq() > 0) {
+      this.isDashing = true;
+      this.dashTime = this.dashDuration;
+      this.dashCooldownRemaining = this.dashCooldown;
+      this.dashDirection.set(movementInput.x, 0, movementInput.y).normalize();
+    }
+
+    this.updateMovement(delta, movementInput, context);
     this.updateRotation(delta, context);
     this.updateAnimation(delta);
   }
 
-  updateMovement(delta, movementInput) {
-    this.moveDirection.set(movementInput.x, 0, movementInput.y);
-    this.isMoving = this.moveDirection.lengthSq() > 0;
-
-    if (this.isMoving) {
-      this.moveDirection.normalize();
-      this.velocity.copy(this.moveDirection).multiplyScalar(this.speed);
+  updateMovement(delta, movementInput, context) {
+    if (this.isDashing) {
+      this.dashTime -= delta;
+      if (this.dashTime <= 0) {
+        this.isDashing = false;
+      }
+      this.velocity.copy(this.dashDirection).multiplyScalar(this.dashSpeed);
       this.playerRoot.position.addScaledVector(this.velocity, delta);
-      this.targetRotation = Math.atan2(this.moveDirection.x, this.moveDirection.z);
-      return;
+      this.isMoving = true; // Always count as moving while dashing
+
+      // Spawn dust trail
+      if (context.vfx && Math.random() > 0.5) {
+        context.vfx.spawnDust(this.playerRoot.position);
+      }
+    } else {
+      this.moveDirection.set(movementInput.x, 0, movementInput.y);
+      this.isMoving = this.moveDirection.lengthSq() > 0;
+
+      if (this.isMoving) {
+        this.moveDirection.normalize();
+        this.velocity.copy(this.moveDirection).multiplyScalar(this.speed);
+        this.playerRoot.position.addScaledVector(this.velocity, delta);
+        this.targetRotation = Math.atan2(this.moveDirection.x, this.moveDirection.z);
+      } else {
+        this.velocity.set(0, 0, 0);
+      }
     }
 
-    this.velocity.set(0, 0, 0);
+    // Handle collision resolution
+    if (this.collisionCallback) {
+      const resolution = this.collisionCallback(this.playerRoot.position, this.playerRadius);
+      if (resolution) {
+        this.playerRoot.position.add(resolution);
+      }
+    }
   }
 
   updateRotation(delta, context) {
