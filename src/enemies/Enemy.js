@@ -277,8 +277,10 @@ export class Enemy {
   }
 
   applyDamageToPlayer() {
-    // Player damage logic will be called here
-    console.log(`Enemy ${this.config.name} hit player for ${this.config.damage}`);
+    if (this.target && typeof this.target.takeDamage === 'function') {
+      this.target.takeDamage(this.config.damage);
+    }
+
     if (this.vfx) {
       this.vfx.spawnImpact(this.target.root.position.clone().add(new THREE.Vector3(0, 1.2, 0)), '#ff0000');
     }

@@ -33,7 +33,7 @@ export class PlayerAnimation {
     this.currentAction = nextAction;
   }
 
-  playOnce(name, onComplete) {
+  playOnce(name, onComplete, shouldResume = true) {
     const action = this.actions.get(name.toLowerCase());
     if (!action) return;
 
@@ -46,7 +46,9 @@ export class PlayerAnimation {
         this.mixer.removeEventListener('finished', onFinished);
         this.lockedAction = null;
         if (onComplete) onComplete();
-        this.play(this.resumeActionName, 0.2);
+        if (shouldResume) {
+          this.play(this.resumeActionName, 0.2);
+        }
       }
     };
 

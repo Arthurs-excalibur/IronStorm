@@ -5,6 +5,7 @@ import { PlayerAnimation } from './PlayerAnimation.js';
 import { PlayerController } from './PlayerController.js';
 import { CHARACTER_OPTIONS, getCharacterById } from './characterCatalog.js';
 import { WeaponSystem } from '../combat/WeaponSystem.js';
+import { PlayerHealth } from './PlayerHealth.js';
 import { ANIMATION_PACK_URLS, ATTACK_ANIMATIONS_BY_CHARACTER } from './animationCatalog.js';
 import { resolveWeaponConfig } from '../combat/weaponCatalog.js';
 
@@ -22,6 +23,11 @@ export class Player {
     this.selectedCharacterId = CHARACTER_OPTIONS[0].id;
     this.currentAttackAnimationName = null;
     this.activeWeaponConfig = null;
+
+    // Health System
+    this.health = new PlayerHealth(100);
+    this.health.onDeath = () => this.handleDeath();
+    this.health.onDamage = () => this.handleDamage();
   }
 
   async load(characterId = CHARACTER_OPTIONS[0].id) {
@@ -131,6 +137,8 @@ export class Player {
   }
 
   attack(onComplete) {
+    if (this.health.isDead) return;
+    
     if (this.animation && this.currentAttackAnimationName) {
       this.controller.lock();
       this.animation.playOnce(this.currentAttackAnimationName, () => {
@@ -138,6 +146,44 @@ export class Player {
         if (onComplete) onComplete();
       });
     }
+  }
+
+  takeDamage(amount) {
+    this.health.takeDamage(amount);
+  }
+
+  handleDeath() {
+    this.controller.lock();
+    if (this.animation) {
+      // Look for death animation
+      const deathAnim = 'death_a'; // Standard KayKit death animation
+      if (this.animation.has(deathAnim)) {
+        this.animation.playOnce(deathAnim, null, false);
+      } else {
+        console.warn('Death animation not found, falling back to idle');
+        this.animation.play('idle');
+      }
+    }
+  }
+
+  handleDamage() {
+    if (!this.model) return;
+
+    // Visual feedback: Flash Red
+    this.model.traverse((child) => {
+      if (child.isMesh && child.material) {
+        // Simple color flash (can be improved with shaders but this is effective)
+        const mat = child.material;
+        const oldColor = mat.color.clone();
+        mat.color.setRGB(2, 0.5, 0.5); // Overbright red
+        
+        setTimeout(() => {
+          if (mat && mat.color) {
+            mat.color.copy(oldColor);
+          }
+        }, 120);
+      }
+    });
   }
 
   prepareModel(model) {
@@ -150,6 +196,14 @@ export class Player {
   }
 
   update(delta, context) {
+    this.health.update(delta);
+    
+    if (this.health.isDead) {
+      // Even if dead, we might want to update animation mixer to finish death animation
+      if (this.animation) this.animation.update(delta);
+      return;
+    }
+
     this.controller.update(delta, context);
     this.weaponSystem.update(delta);
   }

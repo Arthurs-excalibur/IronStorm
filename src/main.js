@@ -12,6 +12,7 @@ import { ArenaManager } from './scene/ArenaManager.js';
 import { VFXSystem } from './systems/VFXSystem.js';
 import { DamageNumbers } from './systems/DamageNumbers.js';
 import { EnemyManager } from './enemies/EnemyManager.js';
+import { HealthBarUI } from './ui/HealthBarUI.js';
 
 const container = document.querySelector('#app');
 const { scene, camera, renderer, clock, groundPlane } = setupScene(container);
@@ -33,6 +34,14 @@ player.setCollisionCallback((pos, radius) => arenaManager.checkCollision(pos, ra
 
 await player.load(initialCharacterId);
 followCamera.snapTo(player.root.position);
+
+// --- UI System ---
+const healthBarUI = new HealthBarUI();
+player.health.onHealthChange = (current, max) => {
+  healthBarUI.update(current, max);
+};
+// Initial UI sync
+healthBarUI.update(player.health.currentHealth, player.health.maxHealth);
 
 // --- Enemy System ---
 const enemyManager = new EnemyManager({
