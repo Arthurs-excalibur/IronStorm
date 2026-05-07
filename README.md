@@ -2,6 +2,8 @@
 
 IronStorm is a high-performance 3D Action RPG prototype built with **Three.js** and **Vite**. It features a dynamic character system, specialized combat animations, and a procedural weapon rigging engine.
 <img width="1912" height="945" alt="image" src="https://github.com/user-attachments/assets/46254319-7e01-4092-9c36-df575c96bb30" />
+<img width="1907" height="964" alt="image" src="https://github.com/user-attachments/assets/2f496e0e-8448-47c9-a6e6-20c9462df7a8" />
+
 
 
 ## 🚀 Recent Progress: The Skeleton Horde Update
