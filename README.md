@@ -10,8 +10,25 @@ IronStorm is a high-performance 3D Action RPG prototype built with **Three.js** 
 <img width="50%" alt="image" src="https://github.com/user-attachments/assets/bcb7a3d8-20d4-4763-89e0-56ff0c8a5846" />
 # Update 3
 
-## 🚀 Recent Progress: The Skeleton Horde Update
-We have just completed a major overhaul of the combat and enemy systems, transforming the prototype into a reactive, high-feedback gaming experience.
+## 🚀 Recent Progress: The Juice & Loot Update
+We've elevated the tactical feel and visual fidelity of the prototype with advanced post-processing and interactable world objects.
+
+### 📦 Destructible World & Loot
+- **Breakable Props**: Randomly spawned barrels and crates that feature physical "wiggle" feedback on hit and satisfy destruction VFX.
+- **Loot System**: Implemented a 50% drop rate for Health Pickups from broken props, featuring floating animations and ethereal glows.
+- **Collection Logic**: Proximity-based pickup system that heals the player and triggers collection effects.
+
+### 🎨 Visual Fidelity & Juice
+- **Post-Processing Pipeline**: Integrated **UnrealBloomPass** for magical glows and a custom **Color Grading** shader for cinematic saturation and contrast.
+- **Hit-Stop (Micro-Pause)**: Implemented frame-perfect pauses (50-100ms) on impact to sell the weight of every blow.
+- **Aggressive Screen Shake**: Rebuilt the camera shake system with quadratic falloff for snappier, more violent feedback.
+
+### ⚔️ Precision Combat Detection
+- **Impact Synchronization**: Melee hitboxes now capture facing direction at the exact moment of impact, allowing for more intuitive "swing" aiming.
+- **Forgiving Hitboxes**: Widened attack cones and extended reach across all weapons for a more satisfying player experience.
+- **Debug Suite**: Toggleable visual debug cones (Red) and enemy rings (Green) to visualize physical hitboxes in real-time.
+
+## 💀 Previous Update: The Skeleton Horde Update
 
 ### 💀 New Modular Enemy System
 - **Divergent AI Archetypes**: 
