@@ -32,6 +32,17 @@ export class Enemy {
 
     this.scene.add(this.root);
     this.createHealthBar();
+    this.createDebugHitbox();
+  }
+
+  createDebugHitbox() {
+    this.debugRing = new THREE.Mesh(
+      new THREE.RingGeometry(this.radius * 0.95, this.radius, 32),
+      new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide })
+    );
+    this.debugRing.rotation.x = -Math.PI / 2;
+    this.debugRing.position.y = 0.05;
+    this.root.add(this.debugRing);
   }
 
   createHealthBar() {

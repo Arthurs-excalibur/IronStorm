@@ -14,8 +14,8 @@ export const WEAPON_CATALOG = {
       damage: 22,
       cooldown: 0.45,
       melee: {
-        coneAngle: THREE.MathUtils.degToRad(55),
-        range: 2.3,
+        coneAngle: THREE.MathUtils.degToRad(75), // Increased from 55
+        range: 2.6, // Increased from 2.3
         impactTime: 0.45,
       },
     },
@@ -37,8 +37,8 @@ export const WEAPON_CATALOG = {
       damage: 18,
       cooldown: 0.35,
       melee: {
-        coneAngle: THREE.MathUtils.degToRad(40),
-        range: 2.1,
+        coneAngle: THREE.MathUtils.degToRad(60), // Increased from 40
+        range: 2.4, // Increased from 2.1
         impactTime: 0.45,
       },
     },
@@ -113,8 +113,8 @@ export const WEAPON_CATALOG = {
       damage: 14,
       cooldown: 0.24,
       melee: {
-        coneAngle: THREE.MathUtils.degToRad(35),
-        range: 1.9,
+        coneAngle: THREE.MathUtils.degToRad(65), // Increased from 35
+        range: 2.2, // Increased from 1.9
         impactTime: 0.45,
       },
     },

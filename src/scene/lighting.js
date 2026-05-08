@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 
 export function createLighting(scene) {
-  const ambientLight = new THREE.AmbientLight('#b0d8ff', 1.8);
+  const ambientLight = new THREE.AmbientLight('#ffffff', 1.0); // Clean base
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight('#fff8e1', 3.2);
+  const hemisphereLight = new THREE.HemisphereLight('#ffffff', '#43362a', 1.5); // Sky color vs Ground color
+  scene.add(hemisphereLight);
+
+  const directionalLight = new THREE.DirectionalLight('#fff8e1', 1.8); // Lowered from 3.2
   directionalLight.position.set(20, 30, 15);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.set(2048, 2048);

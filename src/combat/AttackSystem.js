@@ -11,6 +11,8 @@ export class AttackSystem {
     this.vfx = vfx;
     this.damageNumbers = damageNumbers;
     this.camera = camera;
+    this.onHit = arguments[0].onHit;
+    this.props = arguments[0].props || []; 
     this.projectiles = [];
     this.pendingMeleeHits = [];
     this.pendingProjectiles = [];
@@ -68,19 +70,10 @@ export class AttackSystem {
   doMeleeAttack(config, delay) {
     this.weaponSystem.playMeleeAnimation();
 
-    const origin = this.player.root.position.clone();
-    const facing = new THREE.Vector3(
-      Math.sin(this.player.root.rotation.y),
-      0,
-      Math.cos(this.player.root.rotation.y),
-    );
-
     this.pendingMeleeHits.push({
       damage: config.damage,
       range: config.melee.range,
       coneAngle: config.melee.coneAngle,
-      origin,
-      facing,
       delayRemaining: delay,
     });
   }
@@ -91,24 +84,34 @@ export class AttackSystem {
       hit.delayRemaining -= delta;
 
       if (hit.delayRemaining <= 0) {
-        this.resolveMeleeHit(hit);
+        // --- IMPROVED: Capture current player state for the hit ---
+        const currentOrigin = this.player.root.position.clone();
+        const currentFacing = new THREE.Vector3(
+          Math.sin(this.player.root.rotation.y),
+          0,
+          Math.cos(this.player.root.rotation.y),
+        );
+
+        this.resolveMeleeHit(hit, currentOrigin, currentFacing);
         this.pendingMeleeHits.splice(i, 1);
       }
     }
   }
 
-  resolveMeleeHit(hit) {
+  resolveMeleeHit(hit, origin, facing) {
+    this.showDebugHitbox(origin, facing, hit.range, hit.coneAngle);
+    
     let hitAny = false;
     this.targets.forEach((target) => {
       if (!target.isAlive()) return;
 
-      this.targetOffset.subVectors(target.position, hit.origin);
+      this.targetOffset.subVectors(target.position, origin);
       this.targetOffset.y = 0;
       const distance = this.targetOffset.length();
 
       if (distance <= hit.range + target.radius) {
         this.targetOffset.normalize();
-        const dot = this.targetOffset.dot(hit.facing);
+        const dot = this.targetOffset.dot(facing);
 
         if (dot >= Math.cos(hit.coneAngle / 2)) {
           target.applyDamage(hit.damage, this.player.root.position);
@@ -125,8 +128,26 @@ export class AttackSystem {
       }
     });
 
-    if (hitAny && this.camera) {
-      this.camera.shake(0.4, 0.15);
+    // --- Prop Collision ---
+    this.props.forEach((prop) => {
+      if (!prop.isAlive()) return;
+      this.targetOffset.subVectors(prop.position, origin);
+      this.targetOffset.y = 0;
+      const distance = this.targetOffset.length();
+      if (distance <= hit.range + prop.radius) {
+        this.targetOffset.normalize();
+        const dot = this.targetOffset.dot(facing);
+        if (dot >= Math.cos(hit.coneAngle / 2)) {
+          prop.applyDamage(hit.damage);
+          hitAny = true;
+          if (this.vfx) this.vfx.spawnImpact(prop.position.clone().add(new THREE.Vector3(0, 0.5, 0)), '#8d6e63');
+        }
+      }
+    });
+
+    if (hitAny) {
+      if (this.camera) this.camera.shake(1.2, 0.25); // Significantly boosted (was 0.4, 0.15)
+      if (this.onHit) this.onHit(0.1); // 100ms hitstop
     }
   }
 
@@ -283,9 +304,25 @@ export class AttackSystem {
             this.vfx.spawnImpact(p.mesh.position, impactColor, 8);
           }
           if (this.camera) {
-            this.camera.shake(0.3, 0.12);
+            this.camera.shake(0.8, 0.2); // Boosted (was 0.3, 0.12)
+          }
+          if (this.onHit) {
+            this.onHit(0.06); // 60ms hitstop
           }
           
+          hit = true;
+        }
+      });
+
+      // Check Props
+      this.props.forEach((prop) => {
+        if (!prop.isAlive() || hit) return;
+        const distance = p.mesh.position.distanceTo(prop.position.clone().add(new THREE.Vector3(0, 0.5, 0)));
+        if (distance < p.radius + prop.radius) {
+          prop.applyDamage(p.damage);
+          if (this.vfx) this.vfx.spawnImpact(p.mesh.position, '#8d6e63', 8);
+          if (this.camera) this.camera.shake(0.8, 0.2);
+          if (this.onHit) this.onHit(0.06);
           hit = true;
         }
       });
@@ -294,6 +331,34 @@ export class AttackSystem {
         this.removeProjectile(i);
       }
     }
+  }
+
+  showDebugHitbox(origin, facing, range, coneAngle) {
+    const geometry = new THREE.CircleGeometry(range, 20, -coneAngle / 2, coneAngle);
+    const material = new THREE.MeshBasicMaterial({ 
+      color: '#ff0000', 
+      transparent: true, 
+      opacity: 0.3, 
+      side: THREE.DoubleSide 
+    });
+    const debugMesh = new THREE.Mesh(geometry, material);
+    
+    debugMesh.position.copy(origin);
+    debugMesh.position.y = 0.5; // Slightly above ground
+    debugMesh.rotation.x = -Math.PI / 2;
+    
+    // Rotate to match facing
+    const rotationY = Math.atan2(facing.x, facing.z);
+    debugMesh.rotation.z = -rotationY + Math.PI / 2; // Adjust for CircleGeometry orientation
+    
+    this.scene.add(debugMesh);
+    
+    // Remove after a short duration
+    setTimeout(() => {
+      this.scene.remove(debugMesh);
+      geometry.dispose();
+      material.dispose();
+    }, 200);
   }
 
   removeProjectile(index) {

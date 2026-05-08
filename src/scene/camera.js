@@ -38,8 +38,11 @@ export class FollowCamera {
     this.shakeOffset.set(0, 0, 0);
     if (this.shakeAmount > 0) {
       this.shakeAmount -= delta;
+      // Use a non-linear falloff for a snappier feel
       const progress = this.shakeAmount / this.shakeDuration;
-      const power = this.shakeIntensity * progress;
+      const power = this.shakeIntensity * Math.pow(progress, 2); 
+      
+      // Boost the random range for more "violence"
       this.shakeOffset.set(
         (Math.random() - 0.5) * 2 * power,
         (Math.random() - 0.5) * 2 * power,
@@ -48,6 +51,7 @@ export class FollowCamera {
     }
 
     this.camera.position.lerp(this.positionTarget, smoothing).add(this.shakeOffset);
-    this.camera.lookAt(this.lookTarget.clone().add(this.shakeOffset.multiplyScalar(0.3)));
+    // Use clone() to avoid mutating the original shakeOffset
+    this.camera.lookAt(this.lookTarget.clone().add(this.shakeOffset.clone().multiplyScalar(0.5)));
   }
 }
